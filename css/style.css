@@ -185,6 +185,8 @@ body{
 .doc-toolbar-info strong{ font-size:15px; color:var(--purple-dark); }
 .doc-toolbar-info span{ font-size:12.5px; color:var(--muted); }
 
+.doc-toolbar-actions{ display:flex; gap:10px; flex:none; }
+
 .ghost-btn{
     background:#fff;
     color:var(--teal-dark);
@@ -193,6 +195,12 @@ body{
     white-space:nowrap;
 }
 .ghost-btn:hover{ background:var(--teal-soft); }
+
+.ghost-btn--reset{
+    color:var(--purple-dark);
+    border-color:#cdbcd8;
+}
+.ghost-btn--reset:hover{ background:var(--purple-soft); border-color:var(--purple); }
 
 /* ===================== UPLOAD VIEW ===================== */
 .upload-view{
@@ -633,7 +641,8 @@ button:active{ transform:translateY(1px); }
     .main-layout{ padding:18px 16px; gap:16px; }
     .mode-grid{ grid-template-columns:1fr; }
     .doc-toolbar{ flex-wrap:wrap; }
-    .doc-toolbar .ghost-btn{ width:100%; }
+    .doc-toolbar-actions{ width:100%; flex-direction:column; }
+    .doc-toolbar-actions .ghost-btn{ width:100%; }
 }
 
 @media (max-width:520px){

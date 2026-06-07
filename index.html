@@ -75,7 +75,11 @@
                 <strong id="toolbarDocName">Document</strong>
                 <span id="toolbarMeta"></span>
             </div>
-            <button type="button" class="ghost-btn" id="changeDocBtn">Change document</button>
+            <div class="doc-toolbar-actions">
+                <button type="button" class="ghost-btn ghost-btn--reset" id="resetBtn" hidden
+                        title="Clear this file and upload a different one">&#8635; Reset / re-upload</button>
+                <button type="button" class="ghost-btn" id="changeDocBtn">Change document</button>
+            </div>
         </div>
 
         <!-- Scrollable preview area (height follows the screen) -->

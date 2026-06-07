@@ -31,7 +31,7 @@ const DOCUMENTS = {
         label: "Service Agreement",
         expectedFile: "JB Service Agreement 1.pdf",
         outputName: "JB Service Agreement 1 - Signed.pdf",
-        minPages: 9,
+        pages: 10,
         signatures: [
             {
                 id: "service-participant",
@@ -88,7 +88,7 @@ const DOCUMENTS = {
         label: "Schedule of Supports",
         expectedFile: "JB Schedule of Support 1.pdf",
         outputName: "JB Schedule of Support 1 - Signed.pdf",
-        minPages: 2,
+        pages: 2,
         signatures: [
             {
                 id: "schedule-participant",
@@ -121,6 +121,7 @@ const stepper = document.getElementById("stepper");
 const docToolbar = document.getElementById("docToolbar");
 const toolbarDocName = document.getElementById("toolbarDocName");
 const toolbarMeta = document.getElementById("toolbarMeta");
+const resetBtn = document.getElementById("resetBtn");
 const uploadView = document.getElementById("uploadView");
 const uploadZone = document.getElementById("uploadZone");
 const uploadTitle = document.getElementById("uploadTitle");
@@ -157,6 +158,7 @@ modeModal.querySelectorAll(".mode-option").forEach((option) =>
 
 document.getElementById("openModalBtn").addEventListener("click", openModeModal);
 document.getElementById("changeDocBtn").addEventListener("click", openModeModal);
+resetBtn.addEventListener("click", resetUpload);
 
 uploadZone.addEventListener("click", () => fileInput.click());
 uploadZone.addEventListener("keydown", (event) => {
@@ -229,6 +231,7 @@ function selectMode(key) {
 
     toolbarDocName.textContent = config.label;
     toolbarMeta.textContent = "Awaiting upload";
+    resetBtn.hidden = true; // nothing to reset until a file is loaded
     uploadTitle.textContent = `Upload your ${config.label}`;
     hideUploadError();
 
@@ -240,9 +243,29 @@ function selectMode(key) {
     setStep("upload");
 }
 
+// Clear the current file (e.g. wrong document uploaded) and return to the upload
+// screen for the SAME document type — no page reload needed.
+function resetUpload() {
+    if (!activeDocumentKey) return;
+
+    const hasWork =
+        Object.keys(appliedSignatures).length > 0 ||
+        Object.values(checkedBoxes).some(Boolean) ||
+        Object.values(textValues).some((value) => value && value.trim());
+
+    if (hasWork && !confirm("Clear this file and start over? Your signatures and entries on this document will be discarded.")) {
+        return;
+    }
+
+    selectMode(activeDocumentKey);
+}
+
 /* ---------- File handling ---------- */
 async function handleFile(file) {
     hideUploadError();
+    // Clear the input so the SAME file can be re-selected later (e.g. to retry
+    // after an error, or after Reset). Without this the change event won't fire.
+    fileInput.value = "";
 
     const isPdf =
         file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
@@ -261,9 +284,9 @@ async function handleFile(file) {
 
         const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
 
-        if (pdf.numPages < config.minPages) {
+        if (pdf.numPages !== config.pages) {
             throw new Error(
-                `This PDF has ${pdf.numPages} page(s), but the ${config.label} needs at least ${config.minPages}. Did you upload the right file?`
+                `This file has ${pdf.numPages} page(s), but the ${config.label} should have ${config.pages}. It looks like the wrong file — please upload the correct ${config.label} PDF.`
             );
         }
 
@@ -428,6 +451,7 @@ function enterSigningMode(config, numPages) {
     emptyState.hidden = true;
 
     toolbarMeta.textContent = `${numPages} pages • ${config.signatures.length} signature${config.signatures.length > 1 ? "s" : ""} required`;
+    resetBtn.hidden = false; // a file is loaded; allow re-upload
 
     // Populate signer role dropdown from this document's fields
     signerRoleSelect.innerHTML = config.signatures
