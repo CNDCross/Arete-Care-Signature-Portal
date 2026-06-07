@@ -1,0 +1,18 @@
+# Sample documents contain real participant data (PII) — keep out of the repo
+assets/*.pdf
+
+# OS / editor cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+
+# Scratch / temp artifacts
+_*.png
+_*.pdf
+_*.html
+_*.mjs
+_edge*/
+_e*/
+coords*.txt

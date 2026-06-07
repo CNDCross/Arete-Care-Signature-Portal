@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Arete Care · Signature Portal</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="assets/arete-logo.png">
+
+<script src="libs/pdf.min.js"></script>
+<script src="libs/pdf-lib.min.js"></script>
+<script src="libs/signature_pad.umd.min.js"></script>
+</head>
+
+<body>
+
+<!-- ============ MODE SELECTION MODAL ============ -->
+<div class="modal-overlay" id="modeModal" aria-hidden="false">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modeModalTitle">
+        <img class="modal-logo" src="assets/arete-logo.png" alt="Arete Care">
+        <h2 id="modeModalTitle">Which document are you signing?</h2>
+        <p class="modal-sub">Choose a document. The signature and date fields are pre-positioned for you.</p>
+
+        <div class="mode-grid">
+            <button type="button" class="mode-option" data-mode="service">
+                <span class="mode-icon mode-icon--teal">&#128196;</span>
+                <span class="mode-name">Service Agreement</span>
+                <span class="mode-desc">Participant / Representative &amp; Arete authorised person signatures, plus tick boxes &amp; fill-in fields.</span>
+                <span class="mode-go">Choose this &rarr;</span>
+            </button>
+
+            <button type="button" class="mode-option" data-mode="schedule">
+                <span class="mode-icon mode-icon--purple">&#128203;</span>
+                <span class="mode-name">Schedule of Supports</span>
+                <span class="mode-desc">Participant / Representative signature.</span>
+                <span class="mode-go">Choose this &rarr;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+    <div class="header-inner">
+        <div class="brand-block">
+            <img class="brand-logo" src="assets/arete-logo.png" alt="Arete Care">
+            <div class="brand-text">
+                <h1>Signature Portal</h1>
+                <p>Upload, sign &amp; download your Arete Care document.</p>
+            </div>
+        </div>
+
+        <ol class="stepper" id="stepper">
+            <li data-step="document" class="active"><span>1</span><em>Document</em></li>
+            <li data-step="upload"><span>2</span><em>Upload</em></li>
+            <li data-step="sign"><span>3</span><em>Sign</em></li>
+            <li data-step="download"><span>4</span><em>Download</em></li>
+        </ol>
+    </div>
+    <svg class="header-wave" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,28 C240,52 480,4 720,20 C960,36 1200,52 1440,18 L1440,48 L0,48 Z" fill="#7a5c8e" opacity="0.9"/>
+        <path d="M0,34 C240,12 480,46 720,30 C960,14 1200,2 1440,30 L1440,48 L0,48 Z" fill="#3a9ca3" opacity="0.55"/>
+    </svg>
+</header>
+
+<!-- ============ MAIN LAYOUT ============ -->
+<div class="main-layout">
+
+    <section class="pdf-section">
+
+        <div class="doc-toolbar" id="docToolbar" hidden>
+            <div class="doc-toolbar-info">
+                <strong id="toolbarDocName">Document</strong>
+                <span id="toolbarMeta"></span>
+            </div>
+            <button type="button" class="ghost-btn" id="changeDocBtn">Change document</button>
+        </div>
+
+        <!-- Scrollable preview area (height follows the screen) -->
+        <div class="pdf-scroll" id="pdfScroll">
+
+            <!-- Upload view -->
+            <div class="upload-view" id="uploadView" hidden>
+                <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload PDF">
+                    <span class="upload-icon">&#11014;</span>
+                    <h3 id="uploadTitle">Upload your document</h3>
+                    <p id="uploadHint">Drag &amp; drop the PDF here, or click to browse.</p>
+                </div>
+                <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+                <p class="upload-error" id="uploadError" hidden></p>
+            </div>
+
+            <!-- Document preview (all pages) -->
+            <div id="pdfContainer"></div>
+
+            <!-- Empty / initial -->
+            <div class="empty-state" id="emptyState">
+                <img class="empty-logo" src="assets/arete-logo.png" alt="Arete Care">
+                <p>Select a document to get started.</p>
+                <button type="button" id="openModalBtn">Choose document</button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <aside class="side-panel" id="sidePanel">
+        <div class="panel-title">
+            <span>Signing</span>
+            <strong id="panelMode">Ready</strong>
+        </div>
+
+        <div class="panel-locked" id="panelLocked">
+            Upload a document to start signing.
+        </div>
+
+        <div class="panel-body" id="panelBody" hidden>
+            <div class="panel-hint" id="fieldsHint" hidden>
+                This document has tick boxes and fill-in blanks. Click the
+                highlighted boxes on the document to tick them, and type into the
+                shaded blanks &mdash; typing ticks the matching box automatically.
+            </div>
+
+            <h3>Signature for</h3>
+            <select id="signerRole"></select>
+
+            <h3>Date signed</h3>
+            <input type="date" id="signedDate">
+
+            <h3>Draw signature</h3>
+            <canvas id="signaturePad"></canvas>
+
+            <div class="actions">
+                <button id="clearSignature" class="secondary-btn">Clear</button>
+                <button id="applySignature">Apply signature</button>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                <span id="progressLabel">0 of 0 signed</span>
+            </div>
+
+            <button id="downloadBtn" disabled>Download signed PDF</button>
+
+            <div id="signatureList" class="signature-list"></div>
+        </div>
+    </aside>
+
+</div>
+
+<footer class="site-footer">
+    Level 1, Suite 1/47 Burgundy St, Heidelberg, VIC 3084 &nbsp;·&nbsp;
+    PH: 1800 1 ARETE &nbsp;·&nbsp; www.aretecare.com.au &nbsp;·&nbsp; ABN 45 611 123 454
+    <span>© Arete Care</span>
+</footer>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
