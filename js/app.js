@@ -43,12 +43,12 @@ const DOCUMENTS = {
                 // first visible glyph (~18pt right of PyMuPDF), so dx is calibrated to that.
                 id: "service-participant", role: "participant", label: "Participant / Representative",
                 anchor: "Signature of Participant", dx: -16.9, dy: -52.1, width: 215, height: 32,
-                date: { dx: 73.1, dy: 36.9, size: 10 }
+                date: { cdx: 90.4, dy: 36.9, size: 10 }
             },
             {
                 id: "service-arete", role: "arete", label: "Arete Authorised Person",
                 anchor: "Signature of authorised person", dx: 1.2, dy: -51.3, width: 215, height: 32,
-                date: { dx: 91.2, dy: 43.7, size: 10 }
+                date: { cdx: 108.5, dy: 43.7, size: 10 }
             }
         ],
         /* Tick boxes. Boxes sharing a `group` behave like radio buttons (one choice). */
@@ -85,7 +85,7 @@ const DOCUMENTS = {
             {
                 id: "schedule-participant", role: "participant", label: "Participant / Representative",
                 anchor: "Signature of Participant", dx: -17.6, dy: -42.6, width: 205, height: 32,
-                date: { dx: 186.4, dy: 36.4, size: 10 }
+                date: { cdx: 200.0, dy: 36.4, size: 10 }
             }
         ]
     }
@@ -365,7 +365,7 @@ function resolvePlacements(config, lineIndex) {
         s.rX = a.startX + s.dx;
         s.rTop = a.baselineTop + s.dy;
         if (s.date) {
-            s.rDateX = a.startX + s.date.dx;
+            s.rDateCenterX = a.startX + s.date.cdx; // centre of the date underline
             s.rDateTop = a.baselineTop + s.date.dy;
         }
     }
@@ -667,9 +667,10 @@ function renderDateStamp(target, signedDate) {
     stamp.className = "date-stamp";
     stamp.dataset.dateTarget = target.id;
     stamp.textContent = formatDate(signedDate);
-    stamp.style.left = pct(target.rDateX, pw.width);
+    stamp.style.left = pct(target.rDateCenterX, pw.width);
     stamp.style.top = pct(target.rDateTop, pw.height);
     stamp.style.fontSize = `calc(var(--s, 1) * ${target.date.size}px)`;
+    stamp.style.transform = "translateX(-50%)"; // centre on the underline
 
     wrapper.appendChild(stamp);
 }
@@ -756,10 +757,12 @@ async function downloadSignedPdf() {
 
         page.drawImage(image, placement);
         if (target.date) {
+            const dateText = formatDate(signature.signedDate);
+            const dateWidth = font.widthOfTextAtSize(dateText, target.date.size);
             drawFieldText(
                 page, font, pageSize.height,
-                { x: target.rDateX, top: target.rDateTop, size: target.date.size },
-                formatDate(signature.signedDate)
+                { x: target.rDateCenterX - dateWidth / 2, top: target.rDateTop, size: target.date.size },
+                dateText
             );
         }
     }
