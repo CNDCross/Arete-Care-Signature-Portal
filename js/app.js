@@ -25,81 +25,65 @@ function updatePageScale(wrapper) {
     if (pw) wrapper.style.setProperty("--s", wrapper.clientWidth / pw);
 }
 
-/* ---------- Fixed document definitions (signature placements are constant) ---------- */
+/* ---------- Document definitions (anchor-based, reflow-proof) ----------
+   Every field is positioned relative to a unique line of text (its `anchor`)
+   rather than a fixed page/coordinate. At upload we find the anchor wherever it
+   landed (any page, any vertical position) and place the field by its offset
+   (dx, dy in PDF points) from the anchor line's left/baseline. This survives the
+   document being regenerated with more/fewer pages or reflowed content.
+   Offsets were calibrated from the reference PDFs; see anchor-field-coordinates memo. */
 const DOCUMENTS = {
     service: {
         label: "Service Agreement",
         expectedFile: "JB Service Agreement 1.pdf",
         outputName: "JB Service Agreement 1 - Signed.pdf",
-        pages: 10,
         signatures: [
             {
-                id: "service-participant",
-                role: "participant",
-                label: "Participant / Representative",
-                page: 9,
-                x: 80,
-                top: 360,
-                width: 215,
-                height: 32,
-                date: { x: 170, top: 449, size: 10 }
+                id: "service-participant", role: "participant", label: "Participant / Representative",
+                anchor: "Signature of Participant", dx: 1.2, dy: -52.1, width: 215, height: 32,
+                date: { dx: 91.2, dy: 36.9, size: 10 }
             },
             {
-                id: "service-arete",
-                role: "arete",
-                label: "Arete Authorised Person",
-                page: 9,
-                x: 80,
-                top: 526,
-                width: 215,
-                height: 32,
-                date: { x: 170, top: 621, size: 10 }
+                id: "service-arete", role: "arete", label: "Arete Authorised Person",
+                anchor: "Signature of authorised person", dx: 1.2, dy: -51.3, width: 215, height: 32,
+                date: { dx: 91.2, dy: 43.7, size: 10 }
             }
         ],
         /* Tick boxes. Boxes sharing a `group` behave like radio buttons (one choice). */
         checkboxes: [
-            // Section 11 — Auditor access (Yes/No)
-            { id: "sa-auditor-yes", label: "Auditor access: Yes", page: 7, cx: 451.0, cy: 521.6, size: 8, group: "sa-auditor" },
-            { id: "sa-auditor-no",  label: "Auditor access: No",  page: 7, cx: 493.1, cy: 521.6, size: 8, group: "sa-auditor" },
-            // Section 11 — People who may access records (tick any)
-            { id: "sa-support-coordinator", label: "Support Coordinator", page: 7, cx: 146.3, cy: 586.9, size: 8 },
-            { id: "sa-plan-manager",        label: "Plan Manager",        page: 7, cx: 146.3, cy: 598.9, size: 8 },
-            { id: "sa-school",              label: "School",              page: 7, cx: 146.3, cy: 611.7, size: 8 },
-            { id: "sa-parents",             label: "Parents",             page: 7, cx: 146.3, cy: 623.7, size: 8 },
-            { id: "sa-family-member",       label: "Family Member",       page: 7, cx: 146.3, cy: 636.4, size: 8 },
-            { id: "sa-other-practitioners", label: "Other practitioners / Allied Health", page: 7, cx: 146.3, cy: 649.2, size: 8 },
-            { id: "sa-other-list",          label: "Other",               page: 7, cx: 146.3, cy: 661.2, size: 8 },
-            { id: "sa-offshore",            label: "Offshore Third-Party Contractors", page: 7, cx: 146.3, cy: 674.0, size: 8 },
-            // Section 14 — Participant offered a copy (Yes/No)
-            { id: "sa-copy-yes", label: "Offered a copy: Yes", page: 9, cx: 47.8, cy: 279.1, size: 8, group: "sa-copy" },
-            { id: "sa-copy-no",  label: "Offered a copy: No",  page: 9, cx: 90.5, cy: 279.1, size: 8, group: "sa-copy" },
-            // Section 14 — Explained verbally (Yes/No)
-            { id: "sa-verbally-yes", label: "Explained verbally: Yes", page: 9, cx: 312.9, cy: 344.4, size: 8, group: "sa-verbally" },
-            { id: "sa-verbally-no",  label: "Explained verbally: No",  page: 9, cx: 355.6, cy: 344.4, size: 8, group: "sa-verbally" }
+            // Section 11 — access list (all anchored to the section heading, a rigid block)
+            { id: "sa-auditor-yes", label: "Auditor access: Yes", anchor: "Access to Records", dx: 378.9, dy: 18.6, size: 8, group: "sa-auditor" },
+            { id: "sa-auditor-no",  label: "Auditor access: No",  anchor: "Access to Records", dx: 421.0, dy: 18.6, size: 8, group: "sa-auditor" },
+            { id: "sa-support-coordinator", label: "Support Coordinator", anchor: "Access to Records", dx: 74.2, dy: 83.9, size: 8 },
+            { id: "sa-plan-manager",        label: "Plan Manager",        anchor: "Access to Records", dx: 74.2, dy: 95.9, size: 8 },
+            { id: "sa-school",              label: "School",              anchor: "Access to Records", dx: 74.2, dy: 108.7, size: 8 },
+            { id: "sa-parents",             label: "Parents",             anchor: "Access to Records", dx: 74.2, dy: 120.7, size: 8 },
+            { id: "sa-family-member",       label: "Family Member",       anchor: "Access to Records", dx: 74.2, dy: 133.4, size: 8 },
+            { id: "sa-other-practitioners", label: "Other practitioners / Allied Health", anchor: "Access to Records", dx: 74.2, dy: 146.2, size: 8 },
+            { id: "sa-other-list",          label: "Other",               anchor: "Access to Records", dx: 74.2, dy: 158.2, size: 8 },
+            { id: "sa-offshore",            label: "Offshore Third-Party Contractors", anchor: "Access to Records", dx: 74.2, dy: 171.0, size: 8 },
+            // Section 14 — offered a copy / explained verbally (Yes/No)
+            { id: "sa-copy-yes", label: "Offered a copy: Yes", anchor: "once completed", dx: 4.3, dy: 17.9, size: 8, group: "sa-copy" },
+            { id: "sa-copy-no",  label: "Offered a copy: No",  anchor: "once completed", dx: 47.0, dy: 17.9, size: 8, group: "sa-copy" },
+            { id: "sa-verbally-yes", label: "Explained verbally: Yes", anchor: "explained verbally", dx: 234.1, dy: -3.9, size: 8, group: "sa-verbally" },
+            { id: "sa-verbally-no",  label: "Explained verbally: No",  anchor: "explained verbally", dx: 276.8, dy: -3.9, size: 8, group: "sa-verbally" }
         ],
         /* Fill-in blanks (the underlined spaces). */
         textFields: [
-            { id: "sa-family-name",        label: "Family member name", page: 7, x: 270.8, top: 630.8, width: 250, height: 11, size: 9.5, linkedCheckbox: "sa-family-member" },
-            { id: "sa-other-practitioner", label: "Other practitioner", page: 7, x: 370.4, top: 643.5, width: 148, height: 11, size: 9.5, linkedCheckbox: "sa-other-practitioners" },
-            { id: "sa-other-list",         label: "Other (list)",       page: 7, x: 211.0, top: 655.6, width: 310, height: 11, size: 9.5, linkedCheckbox: "sa-other-list" }
+            { id: "sa-family-name",        label: "Family member name", anchor: "Access to Records", dx: 198.7, dy: 127.8, width: 250, height: 11, size: 9.5, linkedCheckbox: "sa-family-member" },
+            { id: "sa-other-practitioner", label: "Other practitioner", anchor: "Access to Records", dx: 298.3, dy: 140.5, width: 148, height: 11, size: 9.5, linkedCheckbox: "sa-other-practitioners" },
+            { id: "sa-other-list-tf",      label: "Other (list)",       anchor: "Access to Records", dx: 138.9, dy: 152.6, width: 310, height: 11, size: 9.5, linkedCheckbox: "sa-other-list" }
         ]
     },
     schedule: {
         label: "Schedule of Supports",
         expectedFile: "JB Schedule of Support 1.pdf",
         outputName: "JB Schedule of Support 1 - Signed.pdf",
-        pages: 2,
         signatures: [
             {
-                id: "schedule-participant",
-                role: "participant",
-                label: "Participant / Representative",
-                page: 2,
-                x: 80,
-                top: 326,
-                width: 205,
-                height: 32,
-                date: { x: 284, top: 405, size: 10 }
+                id: "schedule-participant", role: "participant", label: "Participant / Representative",
+                anchor: "Signature of Participant", dx: -17.6, dy: -42.6, width: 205, height: 32,
+                date: { dx: 186.4, dy: 36.4, size: 10 }
             }
         ]
     }
@@ -284,9 +268,12 @@ async function handleFile(file) {
 
         const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
 
-        if (pdf.numPages !== config.pages) {
+        // Locate every field by its text anchor (adapts to page count / reflow).
+        const lineIndex = await buildLineIndex(pdf);
+        const resolution = resolvePlacements(config, lineIndex);
+        if (!resolution.ok) {
             throw new Error(
-                `This file has ${pdf.numPages} page(s), but the ${config.label} should have ${config.pages}. It looks like the wrong file — please upload the correct ${config.label} PDF.`
+                `Couldn't find the expected fields in this PDF, so it looks like the wrong file or a changed format. Missing: ${resolution.missing.join(", ")}.`
             );
         }
 
@@ -308,6 +295,94 @@ function showUploadError(message) {
 function hideUploadError() {
     uploadError.hidden = true;
     uploadError.textContent = "";
+}
+
+/* ---------- Anchor resolution (reflow-proof placement) ---------- */
+
+// Build, per page, a list of text lines with their left edge and baseline (in
+// top-origin PDF points), grouping text items that share a baseline.
+async function buildLineIndex(pdf) {
+    const pages = {};
+
+    for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const viewport = page.getViewport({ scale: 1 });
+        const content = await page.getTextContent();
+        const groups = [];
+
+        for (const item of content.items) {
+            if (typeof item.str !== "string" || item.str.length === 0) continue;
+            const x = item.transform[4];
+            const f = item.transform[5]; // baseline, bottom-origin
+            let group = groups.find((g) => Math.abs(g.f - f) < 2);
+            if (!group) {
+                group = { f, items: [] };
+                groups.push(group);
+            }
+            group.items.push({ x, str: item.str });
+        }
+
+        pages[p] = groups.map((g) => {
+            g.items.sort((a, b) => a.x - b.x);
+            return {
+                norm: g.items.map((i) => i.str).join("").replace(/\s+/g, "").toLowerCase(),
+                startX: g.items[0].x,
+                baselineTop: viewport.height - g.f
+            };
+        });
+    }
+
+    return pages;
+}
+
+// Find the (page, startX, baselineTop) of an anchor line, searching pages in order.
+function findAnchorLine(lineIndex, anchor) {
+    const key = anchor.replace(/\s+/g, "").toLowerCase();
+    const pageNumbers = Object.keys(lineIndex).map(Number).sort((a, b) => a - b);
+    for (const p of pageNumbers) {
+        const line = lineIndex[p].find((l) => l.norm.includes(key));
+        if (line) return { page: p, startX: line.startX, baselineTop: line.baselineTop };
+    }
+    return null;
+}
+
+// Resolve every field's actual (page, coords) from its anchor + offsets, storing
+// the result on the field object as r* values used by rendering and download.
+function resolvePlacements(config, lineIndex) {
+    const missing = [];
+    const cache = {};
+    const locate = (anchor) => {
+        if (!(anchor in cache)) cache[anchor] = findAnchorLine(lineIndex, anchor);
+        return cache[anchor];
+    };
+
+    for (const s of config.signatures) {
+        const a = locate(s.anchor);
+        if (!a) { missing.push(s.anchor); continue; }
+        s.rPage = a.page;
+        s.rX = a.startX + s.dx;
+        s.rTop = a.baselineTop + s.dy;
+        if (s.date) {
+            s.rDateX = a.startX + s.date.dx;
+            s.rDateTop = a.baselineTop + s.date.dy;
+        }
+    }
+    for (const c of config.checkboxes || []) {
+        const a = locate(c.anchor);
+        if (!a) { missing.push(c.anchor); continue; }
+        c.rPage = a.page;
+        c.rCx = a.startX + c.dx;
+        c.rCy = a.baselineTop + c.dy;
+    }
+    for (const f of config.textFields || []) {
+        const a = locate(f.anchor);
+        if (!a) { missing.push(f.anchor); continue; }
+        f.rPage = a.page;
+        f.rX = a.startX + f.dx;
+        f.rTop = a.baselineTop + f.dy;
+    }
+
+    return { ok: missing.length === 0, missing: [...new Set(missing)] };
 }
 
 /* ---------- Rendering ---------- */
@@ -349,15 +424,15 @@ async function renderPdfPage(pdf, config, pageNumber) {
     await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
 
     config.signatures
-        .filter((signature) => signature.page === pageNumber)
+        .filter((signature) => signature.rPage === pageNumber)
         .forEach((signature) => wrapper.appendChild(createSignatureBox(signature)));
 
     (config.checkboxes || [])
-        .filter((box) => box.page === pageNumber)
+        .filter((box) => box.rPage === pageNumber)
         .forEach((box) => wrapper.appendChild(createCheckboxOverlay(box)));
 
     (config.textFields || [])
-        .filter((field) => field.page === pageNumber)
+        .filter((field) => field.rPage === pageNumber)
         .forEach((field) => wrapper.appendChild(createTextFieldOverlay(field)));
 
     pageScaleObserver.observe(wrapper);
@@ -365,7 +440,7 @@ async function renderPdfPage(pdf, config, pageNumber) {
 }
 
 function createCheckboxOverlay(box) {
-    const pw = pageSizes[box.page];
+    const pw = pageSizes[box.rPage];
     const el = document.createElement("button");
     el.type = "button";
     el.className = "checkbox-overlay";
@@ -373,8 +448,8 @@ function createCheckboxOverlay(box) {
     el.title = box.label;
     el.setAttribute("aria-label", box.label);
     // positioned at the box centre; CSS centres + sizes it responsively
-    el.style.left = pct(box.cx, pw.width);
-    el.style.top = pct(box.cy, pw.height);
+    el.style.left = pct(box.rCx, pw.width);
+    el.style.top = pct(box.rCy, pw.height);
     el.classList.toggle("checked", Boolean(checkedBoxes[box.id]));
     el.addEventListener("click", () => toggleCheckbox(box, el));
     return el;
@@ -406,10 +481,10 @@ function createTextFieldOverlay(field) {
     input.dataset.textfield = field.id;
     input.title = field.label;
     input.setAttribute("aria-label", field.label);
-    const pw = pageSizes[field.page];
+    const pw = pageSizes[field.rPage];
     input.value = textValues[field.id] || "";
-    input.style.left = pct(field.x, pw.width);
-    input.style.top = pct(field.top, pw.height);
+    input.style.left = pct(field.rX, pw.width);
+    input.style.top = pct(field.rTop, pw.height);
     input.style.width = pct(field.width, pw.width);
     input.style.height = `calc(var(--s, 1) * ${field.height + 4}px)`;
     input.style.fontSize = `calc(var(--s, 1) * ${field.size}px)`;
@@ -430,13 +505,13 @@ function setCheckboxChecked(id, state) {
 }
 
 function createSignatureBox(signature) {
-    const pw = pageSizes[signature.page];
+    const pw = pageSizes[signature.rPage];
     const box = document.createElement("button");
     box.type = "button";
     box.className = "signature-box";
     box.dataset.targetId = signature.id;
-    box.style.left = pct(signature.x, pw.width);
-    box.style.top = pct(signature.top, pw.height);
+    box.style.left = pct(signature.rX, pw.width);
+    box.style.top = pct(signature.rTop, pw.height);
     box.style.width = pct(signature.width, pw.width);
     box.style.height = pct(signature.height, pw.height);
     box.textContent = signature.label;
@@ -585,13 +660,13 @@ function renderDateStamp(target, signedDate) {
     const existing = wrapper.querySelector(`[data-date-target="${target.id}"]`);
     if (existing) existing.remove();
 
-    const pw = pageSizes[target.page];
+    const pw = pageSizes[target.rPage];
     const stamp = document.createElement("div");
     stamp.className = "date-stamp";
     stamp.dataset.dateTarget = target.id;
     stamp.textContent = formatDate(signedDate);
-    stamp.style.left = pct(target.date.x, pw.width);
-    stamp.style.top = pct(target.date.top, pw.height);
+    stamp.style.left = pct(target.rDateX, pw.width);
+    stamp.style.top = pct(target.rDateTop, pw.height);
     stamp.style.fontSize = `calc(var(--s, 1) * ${target.date.size}px)`;
 
     wrapper.appendChild(stamp);
@@ -661,8 +736,8 @@ async function downloadSignedPdf() {
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     for (const target of config.signatures) {
-        const page = pdfDoc.getPage(target.page - 1);
-        const pageSize = pageSizes[target.page] || {
+        const page = pdfDoc.getPage(target.rPage - 1);
+        const pageSize = pageSizes[target.rPage] || {
             width: page.getWidth(),
             height: page.getHeight()
         };
@@ -671,21 +746,27 @@ async function downloadSignedPdf() {
         const placement = fitImageInBox(
             image.width,
             image.height,
-            target.x,
-            fromTop(pageSize.height, target.top, target.height),
+            target.rX,
+            fromTop(pageSize.height, target.rTop, target.height),
             target.width,
             target.height
         );
 
         page.drawImage(image, placement);
-        drawFieldText(page, font, pageSize.height, target.date, formatDate(signature.signedDate));
+        if (target.date) {
+            drawFieldText(
+                page, font, pageSize.height,
+                { x: target.rDateX, top: target.rDateTop, size: target.date.size },
+                formatDate(signature.signedDate)
+            );
+        }
     }
 
     // Ticked checkboxes
     for (const box of config.checkboxes || []) {
         if (!checkedBoxes[box.id]) continue;
-        const page = pdfDoc.getPage(box.page - 1);
-        const pageSize = pageSizes[box.page] || { width: page.getWidth(), height: page.getHeight() };
+        const page = pdfDoc.getPage(box.rPage - 1);
+        const pageSize = pageSizes[box.rPage] || { width: page.getWidth(), height: page.getHeight() };
         drawCheckMark(page, pageSize.height, box);
     }
 
@@ -693,11 +774,11 @@ async function downloadSignedPdf() {
     for (const field of config.textFields || []) {
         const value = (textValues[field.id] || "").trim();
         if (!value) continue;
-        const page = pdfDoc.getPage(field.page - 1);
-        const pageSize = pageSizes[field.page] || { width: page.getWidth(), height: page.getHeight() };
+        const page = pdfDoc.getPage(field.rPage - 1);
+        const pageSize = pageSizes[field.rPage] || { width: page.getWidth(), height: page.getHeight() };
         page.drawText(value, {
-            x: field.x + 2,
-            y: fromTop(pageSize.height, field.top, field.height) + 1.5,
+            x: field.rX + 2,
+            y: fromTop(pageSize.height, field.rTop, field.height) + 1.5,
             size: field.size,
             font,
             color: PDFLib.rgb(0, 0, 0)
@@ -716,8 +797,8 @@ async function downloadSignedPdf() {
 
 function drawCheckMark(page, pageHeight, box) {
     const s = box.size || 8;
-    const cx = box.cx;
-    const cy = pageHeight - box.cy; // to bottom-origin
+    const cx = box.rCx;
+    const cy = pageHeight - box.rCy; // to bottom-origin
     const thickness = Math.max(1, s * 0.16);
     const color = PDFLib.rgb(0.05, 0.1, 0.2);
 
