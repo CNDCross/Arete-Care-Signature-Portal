@@ -88,6 +88,37 @@ const DOCUMENTS = {
                 date: { cdx: 200.0, dy: 36.4, size: 10 }
             }
         ]
+    },
+    consent: {
+        label: "Consent Form",
+        expectedFile: "LP Consent Form 1.pdf",
+        outputName: "LP Consent Form 1 - Signed.pdf",
+        signatures: [
+            {
+                id: "consent-participant", role: "participant", label: "Participant",
+                anchor: "Date:", dx: 328.3, dy: -98.0, width: 120, height: 24,
+                date: { cdx: 154.7, dy: -9.5, size: 10 }
+            },
+            {
+                id: "consent-representative", role: "representative", label: "Participant's Representative",
+                anchor: "Date:", dx: 328.3, dy: -68.3, width: 120, height: 24
+            }
+        ],
+        /* "Use of Media" consent tick boxes (independent opt-ins), anchored to the heading. */
+        checkboxes: [
+            { id: "cf-give-communicate", label: "Give authority — communicate with the following", anchor: "Use of Media", dx: 12.1, dy: 24.9, size: 10 },
+            { id: "cf-give-share",       label: "Give authority — take and share",                  anchor: "Use of Media", dx: 12.1, dy: 87.6, size: 10 },
+            { id: "cf-sub-support",      label: "Support Coordinator",        anchor: "Use of Media", dx: 53.4, dy: 117.2, size: 10 },
+            { id: "cf-sub-senior",       label: "Senior Care Coordinator",    anchor: "Use of Media", dx: 53.4, dy: 133.0, size: 10 },
+            { id: "cf-sub-gp",           label: "General Practitioner",       anchor: "Use of Media", dx: 53.4, dy: 149.1, size: 10 },
+            { id: "cf-sub-allied",       label: "Allied Health Professionals", anchor: "Use of Media", dx: 53.4, dy: 165.1, size: 10 },
+            { id: "cf-sub-staff",        label: "Regular Assigned Staff",     anchor: "Use of Media", dx: 53.4, dy: 181.6, size: 10 },
+            { id: "cf-sub-ndis",         label: "NDIS",                       anchor: "Use of Media", dx: 53.4, dy: 197.5, size: 10 },
+            { id: "cf-ng-therapeutic",   label: "Do not give — therapeutic purposes", anchor: "Use of Media", dx: 12.1, dy: 243.7, size: 10 },
+            { id: "cf-ng-marketing",     label: "Do not give — marketing purposes",   anchor: "Use of Media", dx: 11.2, dy: 273.0, size: 10 },
+            { id: "cf-ng-newsletter",    label: "Do not give — newsletter",           anchor: "Use of Media", dx: 11.1, dy: 303.9, size: 10 },
+            { id: "cf-ng-contact",       label: "Do not give — contact me",           anchor: "Use of Media", dx: 11.0, dy: 336.1, size: 10 }
+        ]
     }
 };
 

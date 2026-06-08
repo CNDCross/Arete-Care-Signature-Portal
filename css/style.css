@@ -551,7 +551,7 @@ button:active{ transform:translateY(1px); }
 
 .modal-card{
     width:100%;
-    max-width:720px;
+    max-width:840px;
     background:#fff;
     border-radius:18px;
     padding:30px 30px 32px;
@@ -567,7 +567,7 @@ button:active{ transform:translateY(1px); }
 .modal-card h2{ margin:0; font-size:23px; color:var(--purple-dark); }
 .modal-sub{ margin:8px 0 24px; color:var(--muted); font-size:14px; }
 
-.mode-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.mode-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:16px; }
 
 .mode-option{
     display:flex;
