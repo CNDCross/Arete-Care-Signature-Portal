@@ -96,12 +96,12 @@ const DOCUMENTS = {
         signatures: [
             {
                 id: "consent-participant", role: "participant", label: "Participant",
-                anchor: "Date:", dx: 328.3, dy: -98.0, width: 120, height: 24,
+                anchor: "Date:", dx: 328.3, dy: -95.0, width: 120, height: 18,
                 date: { cdx: 154.7, dy: -9.5, size: 10 }
             },
             {
                 id: "consent-representative", role: "representative", label: "Participant's Representative",
-                anchor: "Date:", dx: 328.3, dy: -68.3, width: 120, height: 24
+                anchor: "Date:", dx: 328.3, dy: -65.4, width: 120, height: 18
             }
         ],
         /* "Use of Media" consent tick boxes (independent opt-ins), anchored to the heading. */
