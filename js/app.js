@@ -100,7 +100,7 @@ const DOCUMENTS = {
                 date: { cdx: 154.7, dy: -9.5, size: 10 }
             },
             {
-                id: "consent-representative", role: "representative", label: "Participant's Representative",
+                id: "consent-representative", role: "representative", label: "Representative",
                 anchor: "Date:", dx: 328.3, dy: -65.4, width: 120, height: 18
             }
         ],
@@ -547,6 +547,9 @@ function createSignatureBox(signature) {
     box.style.top = pct(signature.rTop, pw.height);
     box.style.width = pct(signature.width, pw.width);
     box.style.height = pct(signature.height, pw.height);
+    // Size the hint label to the box height so it fits short cells (e.g. consent form).
+    const labelPt = Math.max(5, Math.min(11, signature.height * 0.34));
+    box.style.fontSize = `calc(var(--s, 1) * ${labelPt.toFixed(1)}px)`;
     box.textContent = signature.label;
     box.addEventListener("click", () => selectTarget(signature.id, box));
     return box;
