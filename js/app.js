@@ -39,9 +39,11 @@ const DOCUMENTS = {
         outputName: "JB Service Agreement 1 - Signed.pdf",
         signatures: [
             {
+                // NOTE: this anchor line has leading spaces; pdf.js reports it from the
+                // first visible glyph (~18pt right of PyMuPDF), so dx is calibrated to that.
                 id: "service-participant", role: "participant", label: "Participant / Representative",
-                anchor: "Signature of Participant", dx: 1.2, dy: -52.1, width: 215, height: 32,
-                date: { dx: 91.2, dy: 36.9, size: 10 }
+                anchor: "Signature of Participant", dx: -16.9, dy: -52.1, width: 215, height: 32,
+                date: { dx: 73.1, dy: 36.9, size: 10 }
             },
             {
                 id: "service-arete", role: "arete", label: "Arete Authorised Person",
