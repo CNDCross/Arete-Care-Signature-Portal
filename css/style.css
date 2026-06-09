@@ -439,6 +439,7 @@ button:active{ transform:translateY(1px); }
 
 .signature-box{
     position:absolute;
+    min-height:0;            /* override global button min-height:42px so small boxes size correctly */
     border:1.5px solid #b59ec9;
     border-radius:3px;
     background:rgba(122,92,142,.10);
