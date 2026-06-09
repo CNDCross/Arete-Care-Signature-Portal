@@ -439,35 +439,36 @@ button:active{ transform:translateY(1px); }
 
 .signature-box{
     position:absolute;
-    border:1.5px dashed #b7a6cb;
+    border:1.5px solid #b59ec9;
     border-radius:3px;
-    background:rgba(122,92,142,.05);
+    background:rgba(122,92,142,.10);
     cursor:pointer;
     display:flex;
     align-items:center;
     justify-content:center;
     font-weight:700;
     letter-spacing:.2px;
-    color:var(--purple);
+    color:var(--purple-dark);
     padding:0 4px;
     text-align:center;
     overflow:hidden;
     line-height:1.05;
     font-size:max(8px, calc(var(--s, 1) * 11px));
-    transition:background .12s, border-color .12s;
+    transition:background .12s, border-color .12s, box-shadow .12s;
 }
-/* the field being signed now: same hue, just stronger */
+/* the field being signed now: same look, just a subtle focus ring */
 .signature-box:hover,
 .signature-box.active{
     border-color:var(--purple);
-    background:rgba(122,92,142,.12);
-    color:var(--purple-dark);
+    background:rgba(122,92,142,.14);
+    box-shadow:0 0 0 2px rgba(122,92,142,.18);
 }
 /* once signed, always render clean (borderless) — matches the exported PDF */
 .signature-box.signed,
 .signature-box.signed.active{
     border-color:transparent;
     background:transparent;
+    box-shadow:none;
 }
 .signature-box img{ width:100%; height:100%; object-fit:contain; }
 
