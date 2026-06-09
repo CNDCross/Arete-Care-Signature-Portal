@@ -95,15 +95,15 @@ const DOCUMENTS = {
         outputName: "LP Consent Form 1 - Signed.pdf",
         signatures: [
             {
-                // box near the top of its cell (col4 row1); short, so there's a clear gap below
+                // box high in its cell (col4 row1); short so there's a clear gap below
                 id: "consent-participant", role: "participant", label: "Participant",
-                anchor: "Date:", dx: 322.2, dy: -100.4, width: 132, height: 15,
+                anchor: "Date:", dx: 322.2, dy: -100.5, width: 132, height: 14,
                 date: { cdx: 154.7, dy: -9.5, size: 10 }
             },
             {
-                // box near the top of its cell (col4 row2); short, so there's a clear gap below
+                // box high in its cell (col4 row2); short so there's a clear gap below
                 id: "consent-representative", role: "representative", label: "Representative",
-                anchor: "Date:", dx: 322.2, dy: -68.9, width: 132, height: 15
+                anchor: "Date:", dx: 322.2, dy: -67.5, width: 132, height: 14
             }
         ],
         /* "Use of Media" consent tick boxes (independent opt-ins), anchored to the heading. */
@@ -550,7 +550,7 @@ function createSignatureBox(signature) {
     box.style.width = pct(signature.width, pw.width);
     box.style.height = pct(signature.height, pw.height);
     // Size the hint label to the box height so it fits short cells (e.g. consent form).
-    const labelPt = Math.max(5, Math.min(11, signature.height * 0.34));
+    const labelPt = Math.max(7, Math.min(11, signature.height * 0.6));
     box.style.fontSize = `calc(var(--s, 1) * ${labelPt.toFixed(1)}px)`;
     box.textContent = signature.label;
     box.addEventListener("click", () => selectTarget(signature.id, box));
