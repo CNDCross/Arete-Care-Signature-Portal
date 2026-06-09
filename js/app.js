@@ -101,9 +101,9 @@ const DOCUMENTS = {
                 date: { cdx: 154.7, dy: -9.5, size: 10 }
             },
             {
-                // box high in its cell (col4 row2), same top margin as participant for symmetry
+                // shorter than participant because row2 is a shorter cell — keeps bottom margin even
                 id: "consent-representative", role: "representative", label: "Representative",
-                anchor: "Date:", dx: 322.2, dy: -69.0, width: 132, height: 14
+                anchor: "Date:", dx: 322.2, dy: -69.0, width: 132, height: 11
             }
         ],
         /* "Use of Media" consent tick boxes (independent opt-ins), anchored to the heading. */
