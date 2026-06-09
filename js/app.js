@@ -95,15 +95,15 @@ const DOCUMENTS = {
         outputName: "LP Consent Form 1 - Signed.pdf",
         signatures: [
             {
-                // box sits near the top of its cell (col4 row1) with white space below as a separator
+                // box near the top of its cell (col4 row1); short, so there's a clear gap below
                 id: "consent-participant", role: "participant", label: "Participant",
-                anchor: "Date:", dx: 322.2, dy: -99.4, width: 132, height: 18,
+                anchor: "Date:", dx: 322.2, dy: -100.4, width: 132, height: 15,
                 date: { cdx: 154.7, dy: -9.5, size: 10 }
             },
             {
-                // box sits near the top of its cell (col4 row2) with white space below as a separator
+                // box near the top of its cell (col4 row2); short, so there's a clear gap below
                 id: "consent-representative", role: "representative", label: "Representative",
-                anchor: "Date:", dx: 322.2, dy: -67.9, width: 132, height: 18
+                anchor: "Date:", dx: 322.2, dy: -68.9, width: 132, height: 15
             }
         ],
         /* "Use of Media" consent tick boxes (independent opt-ins), anchored to the heading. */
